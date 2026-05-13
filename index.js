@@ -14,12 +14,23 @@ if (!SUPABASE_URL) {
 console.log(`🚀 Starting proxy server...`);
 console.log(`➕ Proxying requests to: ${SUPABASE_URL}`);
 
-// 1. Настройка CORS: разрешаем все заголовки, которые нужны клиенту Supabase
+// 1. Расширенная настройка CORS
 app.use(cors({
   origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'apikey', 'X-Client-Info', 'X-Requested-With', 'accept-profile', 'x-retry-count']
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'apikey',
+    'X-Client-Info',
+    'X-Requested-With',
+    'accept-profile',
+    'x-retry-count',
+    'content-profile',      // ← добавлен
+    'prefer',               // ← добавлен для Supabase
+    'range'                 // ← добавлен для работы с диапазонами
+  ]
 }));
 
 // 2. Обрабатываем предварительные OPTIONS-запросы (preflight)
