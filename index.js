@@ -14,11 +14,20 @@ if (!SUPABASE_URL) {
     process.exit(1);
 }
 
+// Регистрируем прокси для всех методов, КРОМЕ OPTIONS
 await fastify.register(httpProxy, {
-    upstream: SUPABASE_URL,
-    prefix: '/',
-    undici: true,
-    websocket: true
+  upstream: SUPABASE_URL,
+  prefix: '/',
+  undici: true,
+  websocket: true,
+  // Указываем, какие запросы проксировать. Исключаем OPTIONS.
+  preHandler: (request, reply, next) => {
+    if (request.method === 'OPTIONS') {
+      reply.send(); // Просто завершаем OPTIONS-запрос, если он вдруг сюда попадёт
+    } else {
+      next();
+    }
+  }
 });
 
 const port = process.env.PORT || 8080;
