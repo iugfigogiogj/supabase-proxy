@@ -14,7 +14,7 @@ if (!SUPABASE_URL) {
 console.log(`🚀 Starting proxy server...`);
 console.log(`➕ Proxying requests to: ${SUPABASE_URL}`);
 
-// 1. Расширенная настройка CORS
+// Настройка CORS
 app.use(cors({
   origin: true,
   credentials: true,
@@ -27,16 +27,21 @@ app.use(cors({
     'X-Requested-With',
     'accept-profile',
     'x-retry-count',
-    'content-profile',      // ← добавлен
-    'prefer',               // ← добавлен для Supabase
-    'range'                 // ← добавлен для работы с диапазонами
+    'content-profile',
+    'prefer',
+    'range'
   ]
 }));
 
-// 2. Обрабатываем предварительные OPTIONS-запросы (preflight)
+// Обрабатываем предварительные OPTIONS-запросы
 app.options('*', cors());
 
-// 3. Настраиваем прокси
+// ===== HEALTHCHECK ДЛЯ БУДИЛЬНИКА =====
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Прокси для всех остальных запросов
 app.use('/', createProxyMiddleware({
   target: SUPABASE_URL,
   changeOrigin: true,
@@ -51,9 +56,9 @@ app.use('/', createProxyMiddleware({
   }
 }));
 
-// 4. Запускаем сервер
+// Запускаем сервер
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Proxy server is running on port ${PORT}`);
   console.log(`✅ Proxying to Supabase project: ${SUPABASE_URL}`);
-  console.log(`✅ Ready to accept requests from your frontend.`);
+  console.log(`✅ Healthcheck available at /health`);
 });
