@@ -1,0 +1,20 @@
+name: Keep Supabase Awake
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Proxy
+        run: |
+          curl -s -X GET "https://supabase-proxy-ln3q.onrender.com/health"
+
+      - name: Ping Supabase Direct
+        run: |
+          curl -s -X GET "https://kobehbqvfcpuwlubwaus.supabase.co/rest/v1/news?select=id&limit=1" \
+            -H "apikey: sb_publishable_kHCVJfX3Qh2uGvZSkARa-Q_jDtqfDu7" \
+            -H "Authorization: Bearer sb_publishable_kHCVJfX3Qh2uGvZSkARa-Q_jDtqfDu7"
